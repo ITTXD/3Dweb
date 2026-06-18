@@ -465,7 +465,7 @@ function FAQSection() {
         <div className="pf-faq-list">
           {faqs.map((f, i) => (
             <div
-              className={`pf-faq-item reveal ${openIdx === i ? 'open' : ''}`}
+              className={`pf-faq-item ${openIdx === i ? 'open' : ''}`}
               key={i}
             >
               <button className="pf-faq-q" onClick={() => setOpenIdx(openIdx === i ? null : i)}>

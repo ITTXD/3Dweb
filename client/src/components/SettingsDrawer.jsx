@@ -208,7 +208,11 @@ export default function SettingsDrawer() {
                 <span>{price ? `฿ ${price.materialCost}` : '฿ —'}</span>
               </div>
               <div className="price-row">
-                <span>ค่าเครื่อง + แรงงาน</span>
+                <span>ค่าแรงงาน</span>
+                <span>{price ? `฿ ${price.laborCost}` : '฿ —'}</span>
+              </div>
+              <div className="price-row">
+                <span>ค่าเครื่อง</span>
                 <span>{price ? `฿ ${price.machineCost}` : '฿ —'}</span>
               </div>
               <div className="price-row">

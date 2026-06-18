@@ -53,6 +53,7 @@ export default function OrderForm() {
         pricing: {
           total: price?.total || '0',
           materialCost: price?.materialCost || '0',
+          laborCost: price?.laborCost || '0',
           machineCost: price?.machineCost || '0',
           overhead: price?.overhead || '0',
           shipping: price?.shipping || '50',

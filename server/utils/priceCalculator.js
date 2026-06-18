@@ -12,9 +12,10 @@ export function calculatePrice(volume, settings) {
   const timeH = (matVol * 1000) / extRate / 3600 * (settings.support ? 1.15 : 1.0);
 
   const materialCost = weight * m.pricePerGram;
+  const laborCost = materialCost * 0.30;
   const machineCost = timeH * MACHINE_RATE;
   const overhead = OVERHEAD;
-  const total = materialCost + machineCost + overhead;
+  const total = materialCost + laborCost + machineCost + overhead;
 
   const hrs = Math.floor(timeH);
   const mins = Math.round((timeH - hrs) * 60);
@@ -25,6 +26,7 @@ export function calculatePrice(volume, settings) {
     weight: weight.toFixed(1),
     printTime,
     materialCost: materialCost.toFixed(2),
+    laborCost: laborCost.toFixed(2),
     machineCost: machineCost.toFixed(2),
     overhead: overhead.toFixed(2),
     total: total.toFixed(2),

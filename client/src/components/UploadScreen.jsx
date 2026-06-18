@@ -844,12 +844,12 @@ export default function UploadScreen() {
     <div className="pf-landing">
       <Navbar darkMode={darkMode} toggleDark={toggleDark} />
       <HeroSection onStart={handleStart} />
+      <PortfolioSection />
+      <DesignSection />
       <AboutSection />
       <ServicesSection />
       <ProcessSection />
       <MaterialsSection />
-      <PortfolioSection />
-      <DesignSection />
       <FAQSection />
       <ContactSection />
       <UploadCTASection />

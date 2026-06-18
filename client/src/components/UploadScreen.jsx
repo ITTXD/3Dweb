@@ -425,71 +425,6 @@ function DesignSection() {
   );
 }
 
-function TestimonialsSection() {
-  const testimonials = [
-    {
-      name: 'คุณบอล',
-      role: 'นักออกแบบ Product Design',
-      text: 'สั่งพิมพ์ Prototype ชิ้นแรก ประทับใจมาก รายละเอียดคมชัด สีสวย ราคาเป็นธรรม จะสั่งอีกเรื่อยๆ ครับ',
-      rating: 5,
-    },
-    {
-      name: 'คุณแอน',
-      role: 'เจ้าของธุรกิจ SME',
-      text: 'ใช้บริการพิมพ์ของพรีเมียมแจกลูกค้า งานออกมาดีมาก ลูกค้าชอบใจ ขอบคุณ P3D ครับ',
-      rating: 5,
-    },
-    {
-      name: 'คุณเฟิร์ส',
-      role: 'วิศวกร',
-      text: 'พิมพ์ชิ้นส่วนเครื่องจักร ใช้ ABS ทนทานมาก ขนาดตรงพอดี ไม่ต้องแก้ไขเพิ่มเลย',
-      rating: 5,
-    },
-    {
-      name: 'คุณมิ้นท์',
-      role: 'นิสิตคณะสถาปัตย์',
-      text: 'ส่งโมเดลอาคารมาพิมพ์ตอนตี 2 ตอนเช้าได้ของแล้ว รวดเร็วมาก คุณภาพเกินราคาจริงๆ',
-      rating: 5,
-    },
-  ];
-
-  return (
-    <section className="pf-section pf-testimonials">
-      <div className="pf-container">
-        <div className="pf-section-badge reveal">รีวิวจากลูกค้า</div>
-        <h2 className="pf-section-title reveal">
-          ลูกค้า<span className="text-gradient">พูดถึงเรา</span>
-        </h2>
-        <p className="pf-section-desc reveal">
-          ความไว้วางใจจากลูกค้ากว่า 50+ ราย คือสิ่งที่เราภูมิใจที่สุด
-        </p>
-
-        <div className="pf-testimonials-grid">
-          {testimonials.map((t, i) => (
-            <div className="pf-testimonial-card reveal" key={i}>
-              <div className="pf-testimonial-stars">
-                {Array.from({ length: t.rating }, (_, j) => (
-                  <svg key={j} viewBox="0 0 20 20" fill="currentColor" width="16" height="16" style={{ color: '#ffb703' }}>
-                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                  </svg>
-                ))}
-              </div>
-              <p className="pf-testimonial-text">"{t.text}"</p>
-              <div className="pf-testimonial-author">
-                <div className="pf-testimonial-avatar">{t.name[3]}</div>
-                <div>
-                  <div className="pf-testimonial-name">{t.name}</div>
-                  <div className="pf-testimonial-role">{t.role}</div>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
-
 function FAQSection() {
   const [openIdx, setOpenIdx] = useState(null);
   const faqs = [
@@ -906,7 +841,6 @@ export default function UploadScreen() {
       <MaterialsSection />
       <PortfolioSection />
       <DesignSection />
-      <TestimonialsSection />
       <FAQSection />
       <ContactSection />
       <UploadCTASection />

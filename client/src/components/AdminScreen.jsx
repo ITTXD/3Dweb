@@ -58,7 +58,7 @@ const STATUS_MAP = {
 };
 
 /* ─── Detail Modal ─── */
-function OrderDetailModal({ order, onClose, onStatusChange, onUpdateTracking, onDelete }) {
+function OrderDetailModal({ order, onClose, onStatusChange, onAssigneeChange, onUpdateTracking, onDelete }) {
   const [trackingCarrier, setTrackingCarrier] = useState(order.trackingCarrier || '');
   const [trackingNumber, setTrackingNumber] = useState(order.trackingNumber || '');
   const [savingTrack, setSavingTrack] = useState(false);
@@ -93,6 +93,21 @@ function OrderDetailModal({ order, onClose, onStatusChange, onUpdateTracking, on
               <option value="pending">รอตรวจสอบ</option>
               <option value="printing">กำลังพิมพ์</option>
               <option value="completed">เสร็จแล้ว</option>
+            </select>
+          </div>
+
+          {/* Assignee Dropdown */}
+          <div className="admin-modal-status-section">
+            <span className="admin-order-label">ผู้รับงาน</span>
+            <select
+              className="admin-status-select"
+              value={order.assignee || ''}
+              onChange={(event) => onAssigneeChange(order.id, event.target.value)}
+            >
+              <option value="">ยังไม่ระบุ</option>
+              <option value="ภูมิ">ภูมิ</option>
+              <option value="โฟโต้">โฟโต้</option>
+              <option value="อิด">อิด</option>
             </select>
           </div>
 
@@ -565,6 +580,21 @@ export default function AdminScreen() {
     }
   };
 
+  const handleAssigneeChange = async (orderId, assignee) => {
+    try {
+      await updateDoc(doc(db, 'orders', orderId), { assignee });
+      setSelectedOrder((prev) => {
+        if (prev && prev.id === orderId) {
+          return { ...prev, assignee };
+        }
+        return prev;
+      });
+    } catch (error) {
+      console.error(error);
+      alert('อัปเดตผู้รับงานไม่สำเร็จ');
+    }
+  };
+
   const handleUpdateTracking = async (orderId, carrier, number) => {
     try {
       await updateDoc(doc(db, 'orders', orderId), {
@@ -888,6 +918,17 @@ export default function AdminScreen() {
                               <span className="task-card-price">{formatPrice(order.total)}</span>
                               <select
                                 className="task-card-select"
+                                value={order.assignee || ''}
+                                onClick={(e) => e.stopPropagation()}
+                                onChange={(e) => handleAssigneeChange(order.id, e.target.value)}
+                              >
+                                <option value="">ไม่ระบุ</option>
+                                <option value="ภูมิ">ภูมิ</option>
+                                <option value="โฟโต้">โฟโต้</option>
+                                <option value="อิด">อิด</option>
+                              </select>
+                              <select
+                                className="task-card-select"
                                 value={order.status}
                                 style={{ borderColor: st.color, color: st.color }}
                                 onClick={(e) => e.stopPropagation()}
@@ -918,6 +959,7 @@ export default function AdminScreen() {
           order={selectedOrder}
           onClose={() => setSelectedOrder(null)}
           onStatusChange={handleStatusChange}
+          onAssigneeChange={handleAssigneeChange}
           onUpdateTracking={handleUpdateTracking}
           onDelete={handleDeleteOrder}
         />

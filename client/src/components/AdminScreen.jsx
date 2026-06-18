@@ -44,6 +44,7 @@ function normalizeOrder(order) {
     total: order.pricing?.total || order.price || 0,
     printTime: order.pricing?.printTime || order.printTime || '-',
     status: order.status || 'pending',
+    assignee: order.assignee || '',
     createdAt: order.createdAt,
     modelThumbnail: order.model?.thumbnail || order.modelThumbnail || '',
     trackingCarrier: order.trackingCarrier || '',

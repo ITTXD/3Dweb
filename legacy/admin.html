@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard — 3D Print Estimator</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+    <div class="bg-grid"></div>
+    <div class="bg-glow bg-glow-1"></div>
+
+    <!-- ===== LOADING SCREEN ===== -->
+    <div id="loadingScreen" class="admin-container">
+        <div class="spinner"></div>
+        <p style="margin-top: 16px; color: var(--text2);">กำลังตรวจสอบสิทธิ์...</p>
+    </div>
+
+    <!-- ===== LOGIN SCREEN ===== -->
+    <div id="loginScreen" class="admin-container" style="display: none;">
+        <div class="login-card">
+            <div class="logo-icon-lg" style="width: 48px; height: 48px; margin-bottom: 10px;">
+                <svg viewBox="0 0 60 60" fill="none">
+                    <path d="M30 3L57 18V42L30 57L3 42V18L30 3Z" stroke="currentColor" stroke-width="2" fill="none" />
+                </svg>
+            </div>
+            <h2 style="margin-bottom: 24px;">Admin Login</h2>
+            
+            <form id="loginForm">
+                <div class="input-group">
+                    <label>อีเมล (Email)</label>
+                    <input type="email" id="emailInput" required placeholder="admin@example.com">
+                </div>
+                <div class="input-group">
+                    <label>รหัสผ่าน (Password)</label>
+                    <input type="password" id="passwordInput" required placeholder="••••••••">
+                </div>
+                <div id="errorMessage" class="error-msg"></div>
+                <button type="submit" class="btn-primary" id="loginBtn">เข้าสู่ระบบ</button>
+            </form>
+            <div style="margin-top: 20px; font-size: 0.8rem; color: var(--text3);">
+                <a href="index.html" style="color: var(--text2); text-decoration: none;">&larr; กลับไปหน้าหลัก</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== ADMIN DASHBOARD ===== -->
+    <div id="dashboardScreen" class="admin-dashboard" style="display: none;">
+        <nav class="admin-nav">
+            <div class="nav-brand">
+                <span class="logo-sm">3D<span class="text-red">Print</span> Admin</span>
+            </div>
+            <div class="nav-user">
+                <span id="userEmailDisplay" class="user-email">admin@example.com</span>
+                <button id="logoutBtn" class="btn-outline">ออกจากระบบ</button>
+            </div>
+        </nav>
+
+        <main class="admin-main">
+            <header class="dashboard-header">
+                <h1>รายการสั่งพิมพ์ (Order Hub)</h1>
+                <p>จัดการออเดอร์ทั้งหมดที่ลูกค้าส่งเข้ามาจากหน้าเว็บหลัก</p>
+            </header>
+
+            <div class="orders-container">
+                <table class="orders-table">
+                    <thead>
+                        <tr>
+                            <th>วันที่</th>
+                            <th>ลูกค้า</th>
+                            <th>รายละเอียดไฟล์</th>
+                            <th>ราคาประเมิน</th>
+                            <th>สถานะ</th>
+                            <th>จัดการ</th>
+                        </tr>
+                    </thead>
+                    <tbody id="ordersTableBody">
+                        <tr>
+                            <td colspan="6" style="text-align: center; padding: 20px; color: var(--text2);">กำลังโหลดข้อมูล...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+
+    <script type="module" src="admin.js"></script>
+</body>
+</html>

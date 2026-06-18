@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D Print Estimator — ประเมินราคางานปริ้น 3 มิติ</title>
+    <meta name="description"
+        content="อัปโหลดไฟล์ STL เพื่อประเมินราคาปริ้น 3D ทันที ตั้งค่า infill, วัสดุ, สี พร้อมดูตัวอย่าง 3 มิติ">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <!-- ===== UPLOAD SCREEN ===== -->
+    <div class="screen upload-screen" id="uploadScreen">
+        <div class="bg-grid"></div>
+        <div class="bg-glow bg-glow-1"></div>
+        <div class="bg-glow bg-glow-2"></div>
+
+        <div class="upload-content">
+            <div class="logo-hero">
+                <div class="logo-icon-lg">
+                    <svg viewBox="0 0 60 60" fill="none">
+                        <path d="M30 3L57 18V42L30 57L3 42V18L30 3Z" stroke="currentColor" stroke-width="2"
+                            fill="none" />
+                        <path d="M30 3L57 18L30 33L3 18L30 3Z" fill="currentColor" opacity="0.2" />
+                        <path d="M30 33V57" stroke="currentColor" stroke-width="2" />
+                        <path d="M57 18V42" stroke="currentColor" stroke-width="2" opacity="0.4" />
+                    </svg>
+                </div>
+                <h1 class="hero-title">ประเมินราคา<br><span class="text-gradient">งานปริ้น 3D</span></h1>
+                <p class="hero-subtitle">อัปโหลดไฟล์ STL แล้วรับราคาประเมินทันที</p>
+            </div>
+
+            <div class="upload-zone" id="uploadZone">
+                <div class="upload-zone-inner">
+                    <div class="upload-icon">
+                        <svg viewBox="0 0 64 64" fill="none">
+                            <path d="M32 8L52 20V44L32 56L12 44V20L32 8Z" stroke="currentColor" stroke-width="2"
+                                opacity="0.4" />
+                            <path d="M32 20V40" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" />
+                            <path d="M24 28L32 20L40 28" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+                                stroke-linejoin="round" />
+                            <rect x="18" y="42" width="28" height="2" rx="1" fill="currentColor" opacity="0.3" />
+                        </svg>
+                    </div>
+                    <h3 class="upload-title">ลากไฟล์ STL มาวางที่นี่</h3>
+                    <p class="upload-desc">หรือคลิกเพื่อเลือกไฟล์</p>
+                    <div class="upload-badge">รองรับ .STL</div>
+                </div>
+                <input type="file" id="fileInput" accept=".stl" hidden>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== VIEWER SCREEN (fullscreen) ===== -->
+    <div class="screen viewer-screen" id="viewerScreen" style="display:none;">
+
+        <!-- Top Bar -->
+        <div class="top-bar">
+            <div class="top-bar-left">
+                <button class="icon-btn" id="backBtn" title="กลับ">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                        <path d="M19 12H5M12 19l-7-7 7-7" />
+                    </svg>
+                </button>
+                <div class="file-badge" id="fileBadge">
+                    <span class="file-badge-icon">📦</span>
+                    <span class="file-badge-name" id="fileName">—</span>
+                    <span class="file-badge-sep">•</span>
+                    <span class="file-badge-size" id="fileSize">—</span>
+                </div>
+            </div>
+            <div class="top-bar-center">
+                <span class="logo-sm">3D<span class="text-red">Print</span></span>
+            </div>
+            <div class="top-bar-right">
+                <button class="icon-btn" id="resetCameraBtn" title="รีเซ็ตมุมมอง">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                        <path d="M1 4v6h6" />
+                        <path d="M3.51 15a9 9 0 102.13-9.36L1 10" />
+                    </svg>
+                </button>
+                <button class="icon-btn" id="wireframeBtn" title="โหมดโครงร่าง">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="3" width="18" height="18" rx="2" />
+                        <line x1="3" y1="12" x2="21" y2="12" />
+                        <line x1="12" y1="3" x2="12" y2="21" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- 3D Canvas (FULLSCREEN) -->
+        <div class="viewer-fullscreen" id="viewerContainer">
+            <canvas id="viewer3D"></canvas>
+        </div>
+
+        <!-- Viewer Stats (bottom-left) -->
+        <div class="viewer-stats" id="viewerStats">
+            <span id="statTriangles">—</span>
+            <span id="statVolume">—</span>
+            <span id="statDimensions">—</span>
+        </div>
+
+        <!-- Settings Toggle Button (bottom-right) -->
+        <button class="settings-fab" id="settingsFab">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                width="22" height="22">
+                <circle cx="12" cy="12" r="3" />
+                <path
+                    d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z" />
+            </svg>
+            <span>ตั้งค่า & ราคา</span>
+        </button>
+
+        <!-- ===== Floating Settings Drawer ===== -->
+        <div class="drawer-overlay" id="drawerOverlay"></div>
+        <div class="drawer" id="settingsDrawer">
+            <div class="drawer-header">
+                <h2 class="drawer-title">⚙️ ตั้งค่าการปริ้น</h2>
+                <button class="drawer-close" id="drawerCloseBtn">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+                        width="20" height="20">
+                        <line x1="18" y1="6" x2="6" y2="18" />
+                        <line x1="6" y1="6" x2="18" y2="18" />
+                    </svg>
+                </button>
+            </div>
+
+            <div class="drawer-body">
+
+                <!-- Infill -->
+                <div class="setting-group">
+                    <label class="setting-label">
+                        Infill (ความหนาแน่นภายใน)
+                        <span class="setting-value" id="infillValue">20%</span>
+                    </label>
+                    <div class="infill-options" id="infillOptions">
+                        <button class="opt-btn" data-value="5">5%</button>
+                        <button class="opt-btn" data-value="10">10%</button>
+                        <button class="opt-btn active" data-value="20">20%</button>
+                        <button class="opt-btn" data-value="40">40%</button>
+                        <button class="opt-btn" data-value="60">60%</button>
+                        <button class="opt-btn" data-value="80">80%</button>
+                        <button class="opt-btn" data-value="100">100%</button>
+                    </div>
+                    <div class="infill-bar">
+                        <div class="infill-fill" id="infillFill" style="width:20%"></div>
+                    </div>
+                </div>
+
+                <!-- Layer Height -->
+                <div class="setting-group">
+                    <label class="setting-label">
+                        Layer Height (ความสูงชั้น)
+                        <span class="setting-value" id="layerHeightValue">0.20 mm</span>
+                    </label>
+                    <div class="layer-options" id="layerOptions">
+                        <button class="opt-btn-col" data-value="0.10"><span class="opt-top">Ultra Fine</span><span
+                                class="opt-bot">0.10mm</span></button>
+                        <button class="opt-btn-col" data-value="0.15"><span class="opt-top">Fine</span><span
+                                class="opt-bot">0.15mm</span></button>
+                        <button class="opt-btn-col active" data-value="0.20"><span class="opt-top">Standard</span><span
+                                class="opt-bot">0.20mm</span></button>
+                        <button class="opt-btn-col" data-value="0.25"><span class="opt-top">Fast</span><span
+                                class="opt-bot">0.25mm</span></button>
+                        <button class="opt-btn-col" data-value="0.30"><span class="opt-top">Draft</span><span
+                                class="opt-bot">0.30mm</span></button>
+                    </div>
+                </div>
+
+                <!-- Wall Count -->
+                <div class="setting-group">
+                    <label class="setting-label">
+                        Wall Count (จำนวนผนัง)
+                        <span class="setting-value" id="wallValue">2</span>
+                    </label>
+                    <div class="wall-options" id="wallOptions">
+                        <button class="opt-btn-col" data-value="2"><span class="opt-big">2</span><span
+                                class="opt-bot">มาตรฐาน</span></button>
+                        <button class="opt-btn-col" data-value="3"><span class="opt-big">3</span><span
+                                class="opt-bot">แข็งแรง</span></button>
+                        <button class="opt-btn-col" data-value="4"><span class="opt-big">4</span><span
+                                class="opt-bot">แข็งแรงมาก</span></button>
+                    </div>
+                </div>
+
+                <!-- Support -->
+                <div class="setting-group">
+                    <label class="setting-label">Support (ฐานรองรับ)</label>
+                    <div class="toggle-row">
+                        <label class="toggle">
+                            <input type="checkbox" id="supportCheckbox">
+                            <span class="toggle-slider"></span>
+                        </label>
+                        <span class="toggle-label" id="supportLabel">ปิด</span>
+                    </div>
+                </div>
+
+                <hr class="setting-divider">
+
+                <!-- Material -->
+                <div class="setting-group">
+                    <label class="setting-label">
+                        Material (วัสดุ)
+                        <span class="setting-value" id="materialValue">PLA</span>
+                    </label>
+                    <div class="material-options" id="materialOptions">
+                        <button class="mat-btn active" data-value="PLA"><span class="mat-name">PLA</span><span
+                                class="mat-desc">ใช้งานทั่วไป</span><span class="mat-price">฿0.80/g</span></button>
+                        <button class="mat-btn" data-value="ABS"><span class="mat-name">ABS</span><span
+                                class="mat-desc">ทนความร้อน</span><span class="mat-price">฿0.90/g</span></button>
+                        <button class="mat-btn" data-value="PETG"><span class="mat-name">PETG</span><span
+                                class="mat-desc">ทนทาน ยืดหยุ่น</span><span class="mat-price">฿1.00/g</span></button>
+                        <button class="mat-btn" data-value="TPU"><span class="mat-name">TPU</span><span
+                                class="mat-desc">ยืดหยุ่นสูง</span><span class="mat-price">฿1.50/g</span></button>
+                        <button class="mat-btn" data-value="Nylon"><span class="mat-name">Nylon</span><span
+                                class="mat-desc">แข็งแรงสูง</span><span class="mat-price">฿2.00/g</span></button>
+                    </div>
+                </div>
+
+                <!-- Color -->
+                <div class="setting-group">
+                    <label class="setting-label">
+                        Color (สี)
+                        <span class="setting-value" id="colorValue">แดง</span>
+                    </label>
+                    <div class="color-options" id="colorOptions">
+                        <button class="color-swatch active" data-value="#e63946" data-name="แดง" style="--sw:#e63946"
+                            title="แดง"></button>
+                        <button class="color-swatch" data-value="#1a1a1a" data-name="ดำ" style="--sw:#1a1a1a"
+                            title="ดำ"></button>
+                        <button class="color-swatch" data-value="#f1faee" data-name="ขาว" style="--sw:#f1faee"
+                            title="ขาว"></button>
+                        <button class="color-swatch" data-value="#457b9d" data-name="น้ำเงิน" style="--sw:#457b9d"
+                            title="น้ำเงิน"></button>
+                        <button class="color-swatch" data-value="#2d6a4f" data-name="เขียว" style="--sw:#2d6a4f"
+                            title="เขียว"></button>
+                        <button class="color-swatch" data-value="#ffb703" data-name="เหลือง" style="--sw:#ffb703"
+                            title="เหลือง"></button>
+                        <button class="color-swatch" data-value="#fb8500" data-name="ส้ม" style="--sw:#fb8500"
+                            title="ส้ม"></button>
+                        <button class="color-swatch" data-value="#6c757d" data-name="เทา" style="--sw:#6c757d"
+                            title="เทา"></button>
+                    </div>
+                </div>
+
+                <hr class="setting-divider">
+
+                <!-- Price Summary -->
+                <div class="price-section">
+                    <h3 class="price-title">💰 ราคาประเมิน</h3>
+                    <div class="price-grid">
+                        <div class="price-row"><span>ปริมาตรโมเดล</span><span id="priceVolume">— cm³</span></div>
+                        <div class="price-row"><span>น้ำหนักวัสดุ</span><span id="priceWeight">— g</span></div>
+                        <div class="price-row"><span>เวลาปริ้น</span><span id="priceTime">—</span></div>
+                        <div class="price-row"><span>ค่าวัสดุ</span><span id="priceMaterial">฿ —</span></div>
+                        <div class="price-row"><span>ค่าเครื่อง + แรงงาน</span><span id="priceMachine">฿ —</span></div>
+                        <div class="price-row"><span>ค่าดำเนินการ</span><span id="priceOverhead">฿ —</span></div>
+                    </div>
+                    <div class="price-total-box">
+                        <span>ราคารวมประเมิน</span>
+                        <span class="price-total" id="priceTotal">฿ —</span>
+                    </div>
+                    <button class="btn-primary" id="orderBtn" style="width: 100%; padding: 14px; font-size: 1.1rem; margin-bottom: 12px; border-radius: var(--radius);">🚀 ยืนยันการสั่งพิมพ์</button>
+                    <p class="price-note">* ราคาประเมินเบื้องต้น อาจมีการเปลี่ยนแปลง</p>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- ===== ORDER MODAL ===== -->
+        <div class="modal-overlay" id="orderModal">
+            <div class="modal-card">
+                <div class="modal-header">
+                    <h2>📦 รายละเอียดการจัดส่ง</h2>
+                    <button class="modal-close" id="closeModalBtn">&times;</button>
+                </div>
+                <form id="orderForm">
+                    <div class="input-group">
+                        <label>ชื่อ-นามสกุล</label>
+                        <input type="text" id="custName" required placeholder="กรุณากรอกชื่อของคุณ">
+                    </div>
+                    <div class="input-group">
+                        <label>เบอร์โทรศัพท์</label>
+                        <input type="tel" id="custPhone" required placeholder="08X-XXX-XXXX">
+                    </div>
+                    <div class="input-group">
+                        <label>ที่อยู่จัดส่ง</label>
+                        <textarea id="custAddress" rows="3" required placeholder="บ้านเลขที่, ซอย, ถนน, ตำบล, อำเภอ, จังหวัด, รหัสไปรษณีย์"></textarea>
+                    </div>
+                    <div class="modal-actions" style="display: flex; gap: 10px; margin-top: 20px;">
+                        <button type="button" class="btn-outline" id="cancelOrderBtn" style="flex: 1; padding: 12px; border-radius: var(--radius);">ยกเลิก</button>
+                        <button type="submit" class="btn-primary" id="submitOrderBtn" style="flex: 1; padding: 12px; border-radius: var(--radius);">ส่งออเดอร์</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Three.js CDN -->
+    <script type="importmap">
+    {
+        "imports": {
+            "three": "https://cdn.jsdelivr.net/npm/three@0.162.0/build/three.module.js",
+            "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.162.0/examples/jsm/"
+        }
+    }
+    </script>
+    <script type="module" src="app.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,1365 @@
+
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>P3D Printing and Design — รับพิมพ์ 3 มิติ</title>
+  <style>
+    :root {
+      --bg: #FDFBF7;
+      --bg-card: #FFFFFF;
+      --bg-card-hover: #F0EDE5;
+      --bg-elevated: #FFFFFF;
+      --bg-input: #FDFBF7;
+      --accent: #2C2C2C;
+      --accent-soft: #555555;
+      --accent-hover: #1A1A1A;
+      --text: #2C2C2C;
+      --text2: #666666;
+      --text3: #999999;
+      --border: #2C2C2C;
+      --border2: #555555;
+      --border-w: 2px;
+      --shadow: 4px 4px 0px #2C2C2C;
+      --shadow-lg: 6px 6px 0px #2C2C2C;
+      --shadow-sm: 2px 2px 0px #2C2C2C;
+      --radius: 8px;
+      --radius-lg: 12px;
+      --font: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--font);
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    /* ── NAV ── */
+    .nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      background: rgba(253, 251, 247, 0.92);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: var(--border-w) solid var(--border);
+    }
+    .nav-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 24px;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 800;
+      font-size: 1.15rem;
+      color: var(--text);
+      text-decoration: none;
+    }
+    .nav-logo svg { width: 28px; height: 28px; }
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 28px;
+      list-style: none;
+    }
+    .nav-links a {
+      color: var(--text2);
+      text-decoration: none;
+      font-size: 0.88rem;
+      font-weight: 500;
+      padding: 6px 14px;
+      border-radius: var(--radius);
+      border: var(--border-w) solid transparent;
+      transition: all 0.15s ease;
+    }
+    .nav-links a:hover {
+      color: var(--text);
+      background: var(--bg-card);
+      border-color: var(--border);
+      box-shadow: 3px 3px 0 var(--border);
+      transform: translate(-1px, -1px);
+    }
+    .nav-cta {
+      background: var(--accent) !important;
+      color: var(--bg) !important;
+      border-color: var(--accent) !important;
+      font-weight: 600 !important;
+    }
+    .nav-cta:hover {
+      background: var(--accent-hover) !important;
+      box-shadow: var(--shadow) !important;
+    }
+    .nav-mobile-btn {
+      display: none;
+      width: 40px;
+      height: 40px;
+      background: var(--bg-card);
+      border: var(--border-w) solid var(--border);
+      border-radius: var(--radius);
+      cursor: pointer;
+      align-items: center;
+      justify-content: center;
+      box-shadow: var(--shadow-sm);
+    }
+
+    /* ── HERO ── */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 120px 24px 80px;
+      position: relative;
+      background-image: radial-gradient(circle, rgba(44, 44, 44, 0.06) 1px, transparent 1px);
+      background-size: 24px 24px;
+    }
+    .hero-content { position: relative; z-index: 1; }
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--bg-card);
+      border: var(--border-w) solid var(--border);
+      border-radius: 30px;
+      box-shadow: var(--shadow-sm);
+      padding: 6px 16px;
+      font-size: 0.8rem;
+      color: var(--text);
+      margin-bottom: 32px;
+      animation: fadeIn 0.8s ease both;
+    }
+    .hero-badge-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #52d29b;
+      animation: pulse 2s ease-in-out infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(0.8); }
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .hero-title {
+      font-size: clamp(3rem, 10vw, 7rem);
+      font-weight: 900;
+      line-height: 0.95;
+      letter-spacing: -0.04em;
+      margin-bottom: 28px;
+      animation: fadeIn 0.8s ease 0.2s both;
+    }
+    .hero-title .red { color: var(--accent); }
+    .hero-desc {
+      font-size: 1.1rem;
+      color: var(--text2);
+      line-height: 1.7;
+      margin-bottom: 40px;
+      max-width: 520px;
+      margin-left: auto;
+      margin-right: auto;
+      animation: fadeIn 0.8s ease 0.4s both;
+    }
+    .hero-actions {
+      display: flex;
+      gap: 14px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-bottom: 64px;
+      animation: fadeIn 0.8s ease 0.6s both;
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 14px 28px;
+      border-radius: var(--radius-lg);
+      font-family: var(--font);
+      font-size: 0.92rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-decoration: none;
+      border: var(--border-w) solid var(--border);
+      box-shadow: var(--shadow);
+    }
+    .btn-primary {
+      background: var(--accent);
+      color: var(--bg);
+    }
+    .btn-primary:hover {
+      background: var(--accent-hover);
+      transform: translate(-2px, -2px);
+      box-shadow: var(--shadow-lg);
+    }
+    .btn-primary:active {
+      transform: translate(2px, 2px);
+      box-shadow: 2px 2px 0 var(--border);
+    }
+    .btn-ghost {
+      background: var(--bg-card);
+      color: var(--text);
+    }
+    .btn-ghost:hover {
+      background: var(--bg-card-hover);
+      transform: translate(-1px, -1px);
+      box-shadow: 3px 3px 0 var(--border);
+    }
+    .hero-stats {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 36px;
+      animation: fadeIn 0.8s ease 0.8s both;
+    }
+    .hero-stat { text-align: center; }
+    .hero-stat strong {
+      display: block;
+      font-size: 1.8rem;
+      font-weight: 900;
+      letter-spacing: -0.02em;
+      font-variant-numeric: tabular-nums;
+    }
+    .hero-stat span {
+      font-size: 0.78rem;
+      color: var(--text3);
+      letter-spacing: 0.02em;
+    }
+    .hero-stat-divider {
+      width: 2px;
+      height: 36px;
+      background: var(--border);
+    }
+    .hero-scroll {
+      position: absolute;
+      bottom: 36px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      color: var(--text3);
+      font-size: 0.7rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      animation: fadeIn 1s ease 1s both;
+    }
+    .hero-scroll-line {
+      width: 2px;
+      height: 40px;
+      background: linear-gradient(to bottom, var(--accent), transparent);
+      animation: scrollPulse 2s ease-in-out infinite;
+    }
+    @keyframes scrollPulse {
+      0%, 100% { opacity: 0.3; transform: scaleY(0.6); }
+      50% { opacity: 1; transform: scaleY(1); }
+    }
+
+    /* ── SECTIONS ── */
+    .section {
+      padding: 120px 0;
+      position: relative;
+    }
+    .section-badge {
+      display: inline-block;
+      background: var(--bg-card);
+      border: var(--border-w) solid var(--border);
+      box-shadow: var(--shadow-sm);
+      color: var(--text);
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 5px 14px;
+      border-radius: 20px;
+      letter-spacing: 0.04em;
+      margin-bottom: 20px;
+    }
+    .section-title {
+      font-size: clamp(2rem, 5vw, 3.2rem);
+      font-weight: 900;
+      line-height: 1.1;
+      letter-spacing: -0.03em;
+      margin-bottom: 16px;
+    }
+    .section-desc {
+      font-size: 1rem;
+      color: var(--text2);
+      line-height: 1.7;
+      max-width: 560px;
+      margin-bottom: 48px;
+    }
+
+    /* ── ABOUT ── */
+    .about-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+    .about-card {
+      background: var(--bg-card);
+      border: var(--border-w) solid var(--border);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow);
+      padding: 32px 28px;
+      transition: all 0.25s ease;
+    }
+    .about-card:hover {
+      transform: translate(-2px, -2px);
+      box-shadow: var(--shadow-lg);
+    }
+    .about-icon {
+      width: 52px;
+      height: 52px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: var(--radius-lg);
+      border: var(--border-w) solid var(--border);
+      background: var(--bg);
+      color: var(--accent);
+      margin-bottom: 20px;
+      box-shadow: var(--shadow-sm);
+    }
+    .about-card h3 {
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+    .about-card p {
+      color: var(--text2);
+      font-size: 0.88rem;
+      line-height: 1.65;
+    }
+
+    /* ── SERVICES ── */
+    .services-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+    .service-card {
+      background: var(--bg-card);
+      border: var(--border-w) solid var(--border);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow);
+      padding: 36px 28px;
+      transition: all 0.25s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    .service-card:hover {
+      transform: translate(-2px, -2px);
+      box-shadow: var(--shadow-lg);
+    }
+    .service-icon {
+      width: 60px;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 14px;
+      border: var(--border-w) solid var(--border);
+      background: var(--bg);
+      margin-bottom: 24px;
+      box-shadow: var(--shadow-sm);
+    }
+    .service-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+    .service-desc {
+      color: var(--text2);
+      font-size: 0.88rem;
+      line-height: 1.65;
+      margin-bottom: 20px;
+    }
+    .service-line {
+      height: 3px;
+      width: 40px;
+      border-radius: 2px;
+      background: var(--accent);
+      opacity: 0.8;
+      transition: width 0.3s ease;
+    }
+    .service-card:hover .service-line { width: 80px; opacity: 1; }
+
+    /* ── PROCESS ── */
+    .process-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 20px;
+      position: relative;
+    }
+    .process-card {
+      background: var(--bg-card);
+      border: var(--border-w) solid var(--border);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow);
+      padding: 32px 24px;
+      text-align: center;
+      transition: all 0.25s ease;
+      position: relative;
+    }
+    .process-card:hover {
+      transform: translate(-2px, -2px);
+      box-shadow: var(--shadow-lg);
+    }
+    .process-num {
+      font-size: 2.5rem;
+      font-weight: 900;
+      color: rgba(44, 44, 44, 0.06);
+      position: absolute;
+      top: 12px;
+      right: 16px;
+    }
+    .process-icon {
+      width: 52px;
+      height: 52px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: var(--radius-lg);
+      border: var(--border-w) solid var(--border);
+      background: var(--bg);
+      color: var(--accent);
+      margin: 0 auto 18px;
+      box-shadow: var(--shadow-sm);
+    }
+    .process-card h3 {
+      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+    .process-card p {
+      color: var(--text2);
+      font-size: 0.82rem;
+      line-height: 1.6;
+    }
+
+    /* ── MATERIALS ── */
+    .materials-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 14px;
+    }
+    .material-card {
+      display: flex;
+      align-items: stretch;
+      background: var(--bg-card);
+      border: var(--border-w) solid var(--border);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      transition: all 0.25s ease;
+    }
+    .material-card:hover {
+      transform: translate(-2px, -2px);
+      box-shadow: var(--shadow-lg);
+    }
+    .material-color {
+      width: 8px;
+      flex-shrink: 0;
+    }
+    .material-info {
+      padding: 18px 20px;
+      flex: 1;
+    }
+    .material-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 6px;
+    }
+    .material-header h3 {
+      font-size: 1rem;
+      font-weight: 700;
+    }
+    .material-price {
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: var(--accent);
+    }
+    .material-card p {
+      color: var(--text2);
+      font-size: 0.8rem;
+      line-height: 1.55;
+    }
+
+    /* ── TESTIMONIALS ── */
+    .testimonials-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+    }
+    .testimonial-card {
+      background: var(--bg-card);
+      border: var(--border-w) solid var(--border);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow);
+      padding: 28px;
+      transition: all 0.25s ease;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .testimonial-card:hover {
+      transform: translate(-2px, -2px);
+      box-shadow: var(--shadow-lg);
+    }
+    .testimonial-stars {
+      display: flex;
+      gap: 2px;
+      color: var(--accent);
+    }
+    .testimonial-text {
+      color: var(--text2);
+      font-size: 0.92rem;
+      line-height: 1.7;
+      font-style: italic;
+      flex: 1;
+    }
+    .testimonial-author {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding-top: 16px;
+      border-top: var(--border-w) solid var(--border);
+    }
+    .testimonial-avatar {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: var(--accent);
+      color: var(--bg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 1rem;
+      flex-shrink: 0;
+    }
+    .testimonial-name {
+      font-size: 0.9rem;
+      font-weight: 700;
+    }
+    .testimonial-role {
+      font-size: 0.78rem;
+      color: var(--text3);
+    }
+
+    /* ── FAQ ── */
+    .faq-list {
+      max-width: 700px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .faq-item {
+      background: var(--bg-card);
+      border: var(--border-w) solid var(--border);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-sm);
+      overflow: hidden;
+      transition: all 0.2s ease;
+    }
+    .faq-item:hover { box-shadow: var(--shadow); }
+    .faq-item.open { box-shadow: var(--shadow); }
+    .faq-q {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 18px 20px;
+      background: transparent;
+      border: none;
+      color: var(--text);
+      font-family: var(--font);
+      font-size: 0.95rem;
+      font-weight: 600;
+      text-align: left;
+      cursor: pointer;
+      transition: color 0.15s ease;
+    }
+    .faq-q:hover { color: var(--accent-soft); }
+    .faq-chevron {
+      flex-shrink: 0;
+      color: var(--text3);
+      transition: transform 0.25s ease;
+    }
+    .faq-item.open .faq-chevron {
+      transform: rotate(180deg);
+      color: var(--accent);
+    }
+    .faq-a {
+      padding: 0 20px 18px;
+      display: none;
+    }
+    .faq-item.open .faq-a { display: block; }
+    .faq-a p {
+      color: var(--text2);
+      font-size: 0.88rem;
+      line-height: 1.7;
+    }
+
+    /* ── CONTACT ── */
+    .contact-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 48px;
+      align-items: start;
+    }
+    .contact-card {
+      background: var(--bg-card);
+      border: var(--border-w) solid var(--border);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow);
+      padding: 40px;
+      display: flex;
+      flex-direction: column;
+      gap: 28px;
+    }
+    .contact-row {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .contact-icon {
+      width: 44px;
+      height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 10px;
+      border: var(--border-w) solid var(--border);
+      background: var(--bg);
+      color: var(--accent);
+      flex-shrink: 0;
+      box-shadow: var(--shadow-sm);
+    }
+    .contact-label {
+      display: block;
+      font-size: 0.85rem;
+      color: var(--text2);
+      margin-bottom: 2px;
+    }
+    .contact-value {
+      font-size: 1rem;
+      font-weight: 600;
+    }
+    .contact-form {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .form-group { display: flex; flex-direction: column; gap: 6px; }
+    .form-group label {
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--text);
+    }
+    .form-group input,
+    .form-group textarea {
+      padding: 12px 16px;
+      background: var(--bg-input);
+      border: var(--border-w) solid var(--border);
+      border-radius: var(--radius);
+      color: var(--text);
+      font-family: var(--font);
+      font-size: 0.92rem;
+      outline: none;
+      transition: box-shadow 0.15s ease;
+    }
+    .form-group input:focus,
+    .form-group textarea:focus {
+      box-shadow: var(--shadow-sm);
+    }
+    .form-group textarea { resize: vertical; min-height: 100px; }
+
+    /* ── UPLOAD CTA ── */
+    .upload-section { text-align: center; }
+    .upload-zone {
+      max-width: 560px;
+      margin: 0 auto;
+      cursor: pointer;
+    }
+    .upload-inner {
+      border: 2px dashed var(--border);
+      border-radius: var(--radius-lg);
+      padding: 56px 40px;
+      background: var(--bg-card);
+      transition: all 0.25s ease;
+      box-shadow: var(--shadow);
+    }
+    .upload-zone:hover .upload-inner {
+      border-style: solid;
+      background: var(--bg-card-hover);
+      transform: translate(-2px, -2px);
+      box-shadow: var(--shadow-lg);
+    }
+    .upload-icon {
+      width: 56px;
+      height: 56px;
+      color: var(--accent);
+      margin: 0 auto 16px;
+    }
+    .upload-inner h3 {
+      font-size: 1.15rem;
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+    .upload-inner p {
+      color: var(--text2);
+      font-size: 0.9rem;
+      margin-bottom: 14px;
+    }
+    .upload-badge {
+      display: inline-block;
+      background: var(--text);
+      color: var(--bg);
+      font-size: 0.72rem;
+      font-weight: 600;
+      padding: 4px 12px;
+      border-radius: 20px;
+      letter-spacing: 0.05em;
+    }
+
+    /* ── FOOTER ── */
+    .footer {
+      border-top: var(--border-w) solid var(--border);
+      padding: 40px 0;
+    }
+    .footer-inner {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+      text-align: center;
+    }
+    .footer-brand p {
+      color: var(--text3);
+      font-size: 0.85rem;
+      margin-top: 8px;
+    }
+    .footer-links {
+      display: flex;
+      gap: 24px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .footer-links a {
+      color: var(--text3);
+      text-decoration: none;
+      font-size: 0.82rem;
+      transition: color 0.2s;
+    }
+    .footer-links a:hover { color: var(--text); }
+    .footer-copy {
+      font-size: 0.72rem;
+      color: var(--text3);
+    }
+
+    /* ── REVEAL ── */
+    .reveal {
+      opacity: 0;
+      transform: translateY(40px);
+      transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
+                  transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 800px) {
+      .nav-links { display: none; }
+      .nav-mobile-btn { display: flex; }
+      .about-grid,
+      .services-grid { grid-template-columns: 1fr; }
+      .process-grid { grid-template-columns: repeat(2, 1fr); }
+      .testimonials-grid { grid-template-columns: 1fr; }
+      .contact-grid { grid-template-columns: 1fr; gap: 40px; }
+      .hero-stats { gap: 20px; }
+      .hero-stat strong { font-size: 1.4rem; }
+      .section { padding: 80px 0; }
+      .hero-actions { flex-direction: column; align-items: center; }
+    }
+    @media (max-width: 480px) {
+      .hero-title { font-size: 2.8rem; }
+      .process-grid { grid-template-columns: 1fr; }
+      .materials-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav class="nav">
+    <div class="nav-inner">
+      <a href="#" class="nav-logo">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/>
+          <line x1="3" y1="6" x2="21" y2="6"/>
+          <path d="M16 10a4 4 0 01-8 0"/>
+        </svg>
+        P3D
+        <span style="font-weight:500;font-size:0.7rem;text-transform:uppercase;letter-spacing:0.05em;opacity:0.6;">Printing & Design</span>
+      </a>
+      <ul class="nav-links">
+        <li><a href="#about">เกี่ยวกับ</a></li>
+        <li><a href="#services">บริการ</a></li>
+        <li><a href="#process">ขั้นตอน</a></li>
+        <li><a href="#materials">วัสดุ</a></li>
+        <li><a href="#faq">FAQ</a></li>
+        <li><a href="#contact">ติดต่อ</a></li>
+        <li><a href="#upload" class="nav-cta">อัปโหลดโมเดล</a></li>
+      </ul>
+      <button class="nav-mobile-btn" onclick="document.querySelector('.nav-links').classList.toggle('show')">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </button>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-content">
+      <div class="hero-badge">
+        <span class="hero-badge-dot"></span>
+        รับพิมพ์ 3 มิติทุกประเภท
+      </div>
+      <h1 class="hero-title">
+        แปลงไอเดีย<br/>ให้เป็น<span class="red">ของจริง</span>
+      </h1>
+      <p class="hero-desc">
+        บริการพิมพ์ 3 มิติคุณภาพสูง รับออกแบบทุกรูปแบบ ตั้งแต่ต้นแบบจนถึงการผลิตจริง ด้วยเครื่องพิมพ์และวัสดุระดับมืออาชีพ
+      </p>
+      <div class="hero-actions">
+        <a href="#upload" class="btn btn-primary">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+          อัปโหลดโมเดล
+        </a>
+        <a href="#services" class="btn btn-ghost">ดูบริการทั้งหมด</a>
+      </div>
+      <div class="hero-stats">
+        <div class="hero-stat">
+          <strong>500+</strong>
+          <span>โครงการที่ทำเสร็จ</span>
+        </div>
+        <div class="hero-stat-divider"></div>
+        <div class="hero-stat">
+          <strong>15+</strong>
+          <span>ชนิดวัสดุ</span>
+        </div>
+        <div class="hero-stat-divider"></div>
+        <div class="hero-stat">
+          <strong>24 ชม.</strong>
+          <span>เวลาตอบกลับ</span>
+        </div>
+      </div>
+    </div>
+    <div class="hero-scroll">
+      <span>เลื่อนลง</span>
+      <div class="hero-scroll-line"></div>
+    </div>
+  </section>
+
+  <!-- ABOUT -->
+  <section class="section" id="about">
+    <div class="container">
+      <div class="reveal">
+        <span class="section-badge">ทำไมต้อง P3D</span>
+        <h2 class="section-title">บริการพิมพ์ 3 มิติ<br/>ที่คุณวางใจได้</h2>
+        <p class="section-desc">เราคือทีมงานที่มีประสบการณ์ด้านการออกแบบและพิมพ์ 3 มิติ พร้อมให้คำปรึกษาทุกขั้นตอน</p>
+      </div>
+      <div class="about-grid">
+        <div class="about-card reveal">
+          <div class="about-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+          </div>
+          <h3>คุณภาพระดับมืออาชีพ</h3>
+          <p>ใช้เครื่องพิมพ์ FDM, SLA, SLS คุณภาพสูง ได้ชิ้นงานที่แม่นยำ แข็งแรง สวยงาม</p>
+        </div>
+        <div class="about-card reveal">
+          <div class="about-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          </div>
+          <h3>รวดเร็วทันใจ</h3>
+          <p>ส่งงานได้ภายใน 1-3 วัน ขึ้นอยู่กับขนาดและความซับซ้อนของโมเดล</p>
+        </div>
+        <div class="about-card reveal">
+          <div class="about-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4-4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+          </div>
+          <h3>ให้คำปรึกษาฟรี</h3>
+          <p>ทีมงานพร้อมช่วยออกแบบ แก้ไขโมเดล และแนะนำวัสดุที่เหมาะสมกับงานของคุณ</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SERVICES -->
+  <section class="section" id="services" style="background:var(--bg-card);">
+    <div class="container">
+      <div class="reveal">
+        <span class="section-badge">บริการของเรา</span>
+        <h2 class="section-title">บริการพิมพ์ 3 มิติ<br/>ครบวงจร</h2>
+        <p class="section-desc">รับออกแบบและพิมพ์ 3 มิติทุกประเภท ตั้งแต่ต้นแบบ ของเล่น ชิ้นส่วนเครื่องจักร ไปจนถึงงานศิลปะ</p>
+      </div>
+      <div class="services-grid">
+        <div class="service-card reveal">
+          <div class="service-icon">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="2"/><path d="M7 2v20"/><path d="M17 2v20"/><path d="M2 12h20"/></svg>
+          </div>
+          <h3 class="service-title">พิมพ์ต้นแบบ (Prototype)</h3>
+          <p class="service-desc">สร้างต้นแบบ QUICK สำหรับทดสอบการออกแบบ ก่อนผลิตจริง รองรับทุกขนาดและรูปทรง</p>
+          <div class="service-line"></div>
+        </div>
+        <div class="service-card reveal">
+          <div class="service-icon">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/></svg>
+          </div>
+          <h3 class="service-title">พิมพ์ชิ้นส่วน (Parts)</h3>
+          <p class="service-desc">ผลิตชิ้นส่วนทดแทน อะไหล่ หรือชิ้นส่วนเฉพาะทาง สำหรับเครื่องจักร ยานยนต์ อุตสาหกรรม</p>
+          <div class="service-line"></div>
+        </div>
+        <div class="service-card reveal">
+          <div class="service-icon">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/><path d="M2 2l7.586 7.586"/><circle cx="11" cy="11" r="2"/></svg>
+          </div>
+          <h3 class="service-title">ออกแบบ 3 มิติ (Design)</h3>
+          <p class="service-desc">บริการออกแบบโมเดล 3 มิติจากทีมงานมืออาชีพ พร้อมแก้ไขจนกว่าจะพอใจ</p>
+          <div class="service-line"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROCESS -->
+  <section class="section" id="process">
+    <div class="container">
+      <div class="reveal">
+        <span class="section-badge">ขั้นตอนการทำงาน</span>
+        <h2 class="section-title">ส่งโมเดล<br/>ได้ง่ายใน 4 ขั้นตอน</h2>
+        <p class="section-desc">จากไฟล์โมเดลสู่ชิ้นงานจริง ใช้เวลาไม่นาน</p>
+      </div>
+      <div class="process-grid">
+        <div class="process-card reveal">
+          <span class="process-num">01</span>
+          <div class="process-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+          </div>
+          <h3>อัปโหลดโมเดล</h3>
+          <p>อัปโหลดไฟล์ STL, OBJ หรือ STEP ผ่านเว็บไซต์</p>
+        </div>
+        <div class="process-card reveal">
+          <span class="process-num">02</span>
+          <div class="process-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/></svg>
+          </div>
+          <h3>เลือกวัสดุและการตั้งค่า</h3>
+          <p>เลือกวัสดุ สี infill และตั้งค่าอื่นๆ ตามต้องการ</p>
+        </div>
+        <div class="process-card reveal">
+          <span class="process-num">03</span>
+          <div class="process-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+          </div>
+          <h3>ชำระเงิน</h3>
+          <p>ชำระเงินผ่าน PromptPay หรือโอน bank หลังจากได้ใบเสนอราคา</p>
+        </div>
+        <div class="process-card reveal">
+          <span class="process-num">04</span>
+          <div class="process-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+          </div>
+          <h3>จัดส่งงาน</h3>
+          <p>จัดส่งงานพิมพ์ถึงมือคุณ พร้อมติดตามสถานะได้ตลอด</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MATERIALS -->
+  <section class="section" id="materials" style="background:var(--bg-card);">
+    <div class="container">
+      <div class="reveal">
+        <span class="section-badge">วัสดุที่ใช้</span>
+        <h2 class="section-title">เลือกวัสดุที่ใช่<br/>สำหรับงานของคุณ</h2>
+        <p class="section-desc">เรามีวัสดุให้เลือกหลากหลาย ตอบโจทย์ทุกการใช้งาน</p>
+      </div>
+      <div class="materials-grid">
+        <div class="material-card reveal">
+          <div class="material-color" style="background:#E8E8E8;"></div>
+          <div class="material-info">
+            <div class="material-header">
+              <h3>PLA</h3>
+              <span class="material-price">฿4/g</span>
+            </div>
+            <p>วัสดุยอดนิยม ย่อยสลายได้ เหมาะกับต้นแบบและของตกแต่ง</p>
+          </div>
+        </div>
+        <div class="material-card reveal">
+          <div class="material-color" style="background:#2C2C2C;"></div>
+          <div class="material-info">
+            <div class="material-header">
+              <h3>ABS</h3>
+              <span class="material-price">฿5/g</span>
+            </div>
+            <p>แข็งแรง ทนความร้อน เหมาะกับชิ้นส่วนเครื่องจักร</p>
+          </div>
+        </div>
+        <div class="material-card reveal">
+          <div class="material-color" style="background:#F5F5DC;"></div>
+          <div class="material-info">
+            <div class="material-header">
+              <h3>PETG</h3>
+              <span class="material-price">฿6/g</span>
+            </div>
+            <p>ทนสารเคมี ทนความร้อน สำหรับอุตสาหกรรมอาหาร</p>
+          </div>
+        </div>
+        <div class="material-card reveal">
+          <div class="material-color" style="background:#FFD700;"></div>
+          <div class="material-info">
+            <div class="material-header">
+              <h3>TPU</h3>
+              <span class="material-price">฿8/g</span>
+            </div>
+            <p>ยืดหยุ่นได้ เหมาะกับcase โทรศัพท์ รองเท้า ของเล่น</p>
+          </div>
+        </div>
+        <div class="material-card reveal">
+          <div class="material-color" style="background:#C0C0C0;"></div>
+          <div class="material-info">
+            <div class="material-header">
+              <h3>Nylon</h3>
+              <span class="material-price">฿10/g</span>
+            </div>
+            <p>แข็งแรงมาก ทนแรงกระแทก สำหรับชิ้นส่วนโครงสร้าง</p>
+          </div>
+        </div>
+        <div class="material-card reveal">
+          <div class="material-color" style="background:#FF6B6B;"></div>
+          <div class="material-info">
+            <div class="material-header">
+              <h3>Resin (SLA)</h3>
+              <span class="material-price">฿12/g</span>
+            </div>
+            <p>รายละเอียดสูง เหมาะกับโมเดลขนาดเล็ก jewelry denture</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TESTIMONIALS -->
+  <section class="section">
+    <div class="container">
+      <div class="reveal">
+        <span class="section-badge">ลูกค้าของเรา</span>
+        <h2 class="section-title">เสียงจากลูกค้า<br/>ที่ไว้วางใจเรา</h2>
+      </div>
+      <div class="testimonials-grid">
+        <div class="testimonial-card reveal">
+          <div class="testimonial-stars">★★★★★</div>
+          <p class="testimonial-text">"สั่งพิมพ์ต้นแบบ rotary tool holder ได้งานคุณภาพมาก ส่งเร็ว ราคาไม่แพง จะกลับมาใช้บริการอีกแน่นอน"</p>
+          <div class="testimonial-author">
+            <div class="testimonial-avatar">K</div>
+            <div>
+              <div class="testimonial-name">คุณกร</div>
+              <div class="testimonial-role">วิศวกรเครื่องกล</div>
+            </div>
+          </div>
+        </div>
+        <div class="testimonial-card reveal">
+          <div class="testimonial-stars">★★★★★</div>
+          <p class="testimonial-text">"พิมพ์โมเดล architecture scale 1:100 ได้ละเอียดมาก สวยงามเหมือนแบบจริง ทีมงานให้คำปรึกษาดีมาก"</p>
+          <div class="testimonial-author">
+            <div class="testimonial-avatar">S</div>
+            <div>
+              <div class="testimonial-name">คุณสมชาย</div>
+              <div class="testimonial-role">สถาปนิก</div>
+            </div>
+          </div>
+        </div>
+        <div class="testimonial-card reveal">
+          <div class="testimonial-stars">★★★★★</div>
+          <p class="testimonial-text">"ใช้บริการพิมพ์ชิ้นส่วน drone ได้งานตรงสเปค พอดี fit กับ frame เลย ประทับใจมากครับ"</p>
+          <div class="testimonial-author">
+            <div class="testimonial-avatar">P</div>
+            <div>
+              <div class="testimonial-name">คุณภัทร</div>
+              <div class="testimonial-role">Hobbyist</div>
+            </div>
+          </div>
+        </div>
+        <div class="testimonial-card reveal">
+          <div class="testimonial-stars">★★★★★</div>
+          <p class="testimonial-text">"สั่งพิมพ์ packaging mockup สำหรับนำเสนอลูกค้า ได้งานคุณภาพ ทันเวลา ราคาเป็นมิตร"</p>
+          <div class="testimonial-author">
+            <div class="testimonial-avatar">N</div>
+            <div>
+              <div class="testimonial-name">คุณนิด</div>
+              <div class="testimonial-role">นักออกแบบผลิตภัณฑ์</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="section" id="faq" style="background:var(--bg-card);">
+    <div class="container">
+      <div class="reveal">
+        <span class="section-badge">คำถามที่พบบ่อย</span>
+        <h2 class="section-title">มีคำถาม?<br/>เรามีคำตอบ</h2>
+      </div>
+      <div class="faq-list">
+        <div class="faq-item reveal">
+          <button class="faq-q" onclick="this.parentElement.classList.toggle('open')">
+            ไฟล์โมเดลแบบไหนที่รับได้?
+            <svg class="faq-chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="faq-a"><p>เรารับไฟล์ STL, OBJ, STEP, IGES, 3MF ทั้งแบบ mesh และ solid หากไม่มีไฟล์ เรายังรับรูปภาพหรือ sketch เป็นอ้างอิงได้อีกด้วย</p></div>
+        </div>
+        <div class="faq-item reveal">
+          <button class="faq-q" onclick="this.parentElement.classList.toggle('open')">
+            ใช้เวลาพิมพ์นานแค่ไหน?
+            <svg class="faq-chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="faq-a"><p>โดยทั่วไปใช้เวลา 1-3 วันทำการ สำหรับงานเร่งด่วนสามารถ discuss กับทีมงานได้ ขึ้นอยู่กับขนาดและความซับซ้อนของโมเดล</p></div>
+        </div>
+        <div class="faq-item reveal">
+          <button class="faq-q" onclick="this.parentElement.classList.toggle('open')">
+            ค่าพิมพ์คิดอย่างไร?
+            <svg class="faq-chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="faq-a"><p>ราคาคิดตามน้ำหนักวัสดุ (บาท/กรัม) บวกค่าตั้งค่าและค่าออกแบบ (ถ้ามี) สามารถขอใบเสนอราคาก่อนได้ฟรี ไม่มีค่าใช้จ่าย</p></div>
+        </div>
+        <div class="faq-item reveal">
+          <button class="faq-q" onclick="this.parentElement.classList.toggle('open')">
+            จัดส่งยังไง?
+            <svg class="faq-chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="faq-a"><p>จัดส่งผ่าน Kerry Express, J&T Express หรือรับเองที่ร้าน ค่าจัดส่งคิดตามจริง สำหรับงานในกรุงเทพฯ ส่งได้ภายใน 1 วัน</p></div>
+        </div>
+        <div class="faq-item reveal">
+          <button class="faq-q" onclick="this.parentElement.classList.toggle('open')">
+            ถ้าโมเดลพิมพ์ออกมาไม่ตรงแบบ?
+            <svg class="faq-chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="faq-a"><p>หากงานไม่ตรงสเปคหรือมีปัญหาคุณภาพ เรายินดีแก้ไขหรือพิมพ์ใหม่ให้ฟรี ความพึงพอใจของลูกค้าคือสิ่งสำคัญที่สุด</p></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section class="section" id="contact">
+    <div class="container">
+      <div class="reveal">
+        <span class="section-badge">ติดต่อเรา</span>
+        <h2 class="section-title">พร้อมเริ่มงาน<br/>พิมพ์ 3 มิติ?</h2>
+        <p class="section-desc">ติดต่อเราได้ทุกช่องทาง หรือส่งโมเดลมาให้ประเมินราคาฟรี</p>
+      </div>
+      <div class="contact-grid">
+        <div class="contact-card reveal">
+          <div class="contact-row">
+            <div class="contact-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z"/></svg>
+            </div>
+            <div>
+              <span class="contact-label">โทรศัพท์</span>
+              <span class="contact-value">09X-XXX-XXXX</span>
+            </div>
+          </div>
+          <div class="contact-row">
+            <div class="contact-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+            </div>
+            <div>
+              <span class="contact-label">อีเมล</span>
+              <span class="contact-value">info@p3d.co.th</span>
+            </div>
+          </div>
+          <div class="contact-row">
+            <div class="contact-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            </div>
+            <div>
+              <span class="contact-label">ที่อยู่</span>
+              <span class="contact-value">กรุงเทพฯ, ประเทศไทย</span>
+            </div>
+          </div>
+          <div class="contact-row">
+            <div class="contact-icon" style="background:#1877F2;color:#fff;border-color:#1877F2;">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+            </div>
+            <div>
+              <span class="contact-label">Facebook</span>
+              <span class="contact-value">P3D Printing and Design</span>
+            </div>
+          </div>
+        </div>
+        <div class="contact-form reveal">
+          <div class="form-group">
+            <label>ชื่อ</label>
+            <input type="text" placeholder="ชื่อ-นามสกุล" />
+          </div>
+          <div class="form-group">
+            <label>อีเมล</label>
+            <input type="email" placeholder="email@example.com" />
+          </div>
+          <div class="form-group">
+            <label>รายละเอียด</label>
+            <textarea placeholder="บอกเราเกี่ยวกับโครงการของคุณ..."></textarea>
+          </div>
+          <button class="btn btn-primary" style="width:100%;justify-content:center;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+            ส่งข้อความ
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- UPLOAD CTA -->
+  <section class="section upload-section" id="upload" style="background:var(--bg-card);">
+    <div class="container">
+      <div class="reveal">
+        <span class="section-badge">เริ่มเลย</span>
+        <h2 class="section-title">พร้อมพิมพ์ 3 มิติ<br/>ของคุณแล้วหรือยัง?</h2>
+        <p class="section-desc" style="margin-left:auto;margin-right:auto;">อัปโหลดโมเดลของคุณตอนนี้ แล้วรับใบเสนอราคาฟรีภายใน 24 ชั่วโมง</p>
+      </div>
+      <div class="upload-zone reveal" onclick="document.getElementById('fileInput').click()">
+        <div class="upload-inner">
+          <svg class="upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+          <h3>ลากไฟล์มาวางที่นี่</h3>
+          <p>หรือคลิกเพื่อเลือกไฟล์</p>
+          <span class="upload-badge">STL, OBJ, STEP — สูงสุด 50MB</span>
+          <input type="file" id="fileInput" accept=".stl,.obj,.step,.iges,.3mf" style="display:none" />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-inner">
+        <div class="footer-brand">
+          <a href="#" class="nav-logo" style="justify-content:center;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:24px;height:24px;">
+              <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/>
+              <line x1="3" y1="6" x2="21" y2="6"/>
+              <path d="M16 10a4 4 0 01-8 0"/>
+            </svg>
+            P3D Printing and Design
+          </a>
+          <p>บริการพิมพ์ 3 มิติคุณภาพสูง รับออกแบบทุกรูปแบบ</p>
+        </div>
+        <div class="footer-links">
+          <a href="#about">เกี่ยวกับ</a>
+          <a href="#services">บริการ</a>
+          <a href="#process">ขั้นตอน</a>
+          <a href="#materials">วัสดุ</a>
+          <a href="#faq">FAQ</a>
+          <a href="#contact">ติดต่อ</a>
+        </div>
+        <p class="footer-copy">&copy; 2026 P3D Printing and Design. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Reveal on scroll
+    const reveals = document.querySelectorAll('.reveal');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry, i) => {
+        if (entry.isIntersecting) {
+          setTimeout(() => entry.target.classList.add('visible'), i * 80);
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.1 });
+    reveals.forEach(el => observer.observe(el));
+
+    // Mobile nav toggle
+    const style = document.createElement('style');
+    style.textContent = '@media(max-width:800px){.nav-links.show{display:flex!important;flex-direction:column;position:absolute;top:64px;left:0;right:0;background:var(--bg);border-bottom:2px solid var(--border);padding:16px 24px;gap:8px;}.nav-links.show a{padding:10px 14px;width:100%;}}';
+    document.head.appendChild(style);
+
+    // Close mobile nav on link click
+    document.querySelectorAll('.nav-links a').forEach(link => {
+      link.addEventListener('click', () => {
+        document.querySelector('.nav-links').classList.remove('show');
+      });
+    });
+
+    // Contact form submit
+    document.querySelector('.contact-form .btn').addEventListener('click', (e) => {
+      e.preventDefault();
+      alert('ขอบคุณสำหรับข้อความ! เราจะติดต่อกลับโดยเร็วที่สุด');
+      document.querySelector('.contact-form').reset();
+    });
+
+    // Upload zone drag and drop
+    const uploadZone = document.querySelector('.upload-zone');
+    const fileInput = document.getElementById('fileInput');
+    
+    uploadZone.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      uploadZone.classList.add('dragover');
+    });
+    
+    uploadZone.addEventListener('dragleave', () => {
+      uploadZone.classList.remove('dragover');
+    });
+    
+    uploadZone.addEventListener('drop', (e) => {
+      e.preventDefault();
+      uploadZone.classList.remove('dragover');
+      const files = e.dataTransfer.files;
+      if (files.length > 0) {
+        alert(`ไฟล์ ${files[0].name} ถูกเลือกแล้ว`);
+      }
+    });
+    
+    fileInput.addEventListener('change', (e) => {
+      if (e.target.files.length > 0) {
+        alert(`ไฟล์ ${e.target.files[0].name} ถูกเลือกแล้ว`);
+      }
+    });
+  </script>
+
+</body>
+</html>

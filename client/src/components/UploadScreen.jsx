@@ -487,42 +487,6 @@ function FAQSection() {
   );
 }
 
-function VisionSection() {
-  return (
-    <section className="pf-section pf-vision">
-      <div className="pf-container">
-        <div className="pf-vision-grid">
-          <div className="pf-vision-left reveal">
-            <div className="pf-section-badge">วิสัยทัศน์</div>
-            <h2 className="pf-section-title">
-              เราเชื่อว่าทุกคน<br />
-              ควร<span className="text-gradient">เข้าถึง</span>การผลิต<br />
-              ได้ง่าย
-            </h2>
-          </div>
-          <div className="pf-vision-right">
-            <div className="pf-vision-card reveal">
-              <div className="pf-vision-num">01</div>
-              <h3>วิสัยทัศน์ (Vision)</h3>
-              <p>เป็นผู้ให้บริการพิมพ์ 3 มิติที่เข้าถึงง่ายที่สุดในประเทศไทย เราต้องการให้ทุกคน — ไม่ว่าจะเป็นนักเรียน, วิศวกร, หรือนักออกแบบ — สามารถเปลี่ยนไอเดียให้เป็นของจริงได้ในราคาที่เป็นธรรม</p>
-            </div>
-            <div className="pf-vision-card reveal">
-              <div className="pf-vision-num">02</div>
-              <h3>พันธกิจ (Mission)</h3>
-              <p>ให้บริการพิมพ์ 3 มิติคุณภาพสูง ราคาโปร่งใส ด้วยระบบที่ทันสมัย — อัปโหลดไฟล์, เลือกวัสดุ, รับราคาทันที ไม่ต้องรอใบเสนอราคา ไม่มีค่าใช้จ่ายแอบแฝง</p>
-            </div>
-            <div className="pf-vision-card reveal">
-              <div className="pf-vision-num">03</div>
-              <h3>ค่านิยม (Values)</h3>
-              <p>คุณภาพมาก่อนเสมอ — เราใช้เครื่องพิมพ์และวัสดุเกรดเดียวกับโรงงานอุตสาหกรรม พร้อมทีมงานที่ตรวจสอบทุกชิ้นงานก่อนส่งมอบ</p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-}
-
 function ProcessSection() {
   const steps = [
     {
@@ -835,7 +799,6 @@ export default function UploadScreen() {
       <Navbar darkMode={darkMode} toggleDark={toggleDark} />
       <HeroSection onStart={handleStart} />
       <AboutSection />
-      <VisionSection />
       <ServicesSection />
       <ProcessSection />
       <MaterialsSection />

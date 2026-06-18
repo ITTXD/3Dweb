@@ -362,7 +362,7 @@ function PortfolioSection() {
         </div>
 
         {view === 'slider' ? (
-          <div className="pf-slider reveal">
+          <div className="pf-slider">
             <div className="pf-slider-main">
               <button className="pf-slider-arrow pf-slider-prev" onClick={prev}>
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" width="20" height="20"><path d="M15 18l-6-6 6-6"/></svg>
@@ -387,7 +387,7 @@ function PortfolioSection() {
             </div>
           </div>
         ) : (
-          <div className="pf-portfolio-grid-enhanced reveal">
+          <div className="pf-portfolio-grid-enhanced">
             {works.map((w, i) => (
               <div className="pf-portfolio-card" key={i}>
                 <div className="pf-portfolio-img">

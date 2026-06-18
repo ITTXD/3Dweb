@@ -307,7 +307,7 @@ function PortfolioSection() {
   const [view, setView] = useState('slider');
   const works = [
     { title: 'Miniature Landscape', cat: 'PLA · White', img: '/495623755_122132549732794608_242040306043299336_n.jpg' },
-    { title: 'Phone Stand', cat: 'PLA · Black', img: '/721463782_122205909518794608_5667375791186236805_n.jpg' },
+    { title: 'Phone Stand', cat: 'PLA · Black', img: '/514809310_1266757891457925_839745560445815825_n.jpg' },
     { title: 'Gear Mechanism', cat: 'PETG · Grey', img: '/582620168_122175795890794608_717930253430037757_n.jpg' },
     { title: 'Character Figurine', cat: 'PLA · Red', img: '/581938965_122175566582794608_65542895122778247_n.jpg' },
     { title: 'Architectural Model', cat: 'PLA · Blue', img: '/515020634_1266757901457924_3943247298544248060_n.jpg' },
@@ -420,7 +420,7 @@ function DesignSection() {
     { title: 'Design 9', img: '/506741618_122142740630794608_6661992460606179504_n.jpg' },
     { title: 'Design 10', img: '/514247019_122146364990794608_6177439173248531107_n.jpg' },
     { title: 'Design 11', img: '/514326700_122146364852794608_3015963242111860793_n.jpg' },
-    { title: 'Design 12', img: '/721463782_122205909518794608_5667375791186236805_n.jpg' },
+    { title: 'Design 12', img: '/499043714_122136961082794608_1718588916961603118_n.jpg' },
   ];
 
   const prev = useCallback(() => setCurrent(c => (c === 0 ? designs.length - 1 : c - 1)), []);

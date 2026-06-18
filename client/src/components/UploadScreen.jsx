@@ -258,6 +258,7 @@ function ServicesSection() {
 
 function PortfolioSection() {
   const [current, setCurrent] = useState(0);
+  const [view, setView] = useState('slider');
   const works = [
     { title: 'Miniature Landscape', cat: 'PLA · White', img: '/495623755_122132549732794608_242040306043299336_n.jpg' },
     { title: 'Phone Stand', cat: 'PLA · Black', img: '/721463782_122205909518794608_5667375791186236805_n.jpg' },
@@ -275,9 +276,11 @@ function PortfolioSection() {
   const next = useCallback(() => setCurrent(c => (c === works.length - 1 ? 0 : c + 1)), []);
 
   useEffect(() => {
-    const timer = setInterval(next, 4000);
-    return () => clearInterval(timer);
-  }, [next]);
+    if (view === 'slider') {
+      const timer = setInterval(next, 4000);
+      return () => clearInterval(timer);
+    }
+  }, [next, view]);
 
   return (
     <section className="pf-section pf-portfolio" id="portfolio">
@@ -287,30 +290,71 @@ function PortfolioSection() {
           ตัวอย่าง<span className="text-gradient">งานพิมพ์</span>
         </h2>
 
-        <div className="pf-slider reveal">
-          <div className="pf-slider-main">
-            <button className="pf-slider-arrow pf-slider-prev" onClick={prev}>
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" width="20" height="20"><path d="M15 18l-6-6 6-6"/></svg>
-            </button>
-            <div className="pf-slider-img">
-              <img key={current} className="pf-slider-fade" src={works[current].img} alt={works[current].title} />
-            </div>
-            <button className="pf-slider-arrow pf-slider-next" onClick={next}>
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" width="20" height="20"><path d="M9 18l6-6-6-6"/></svg>
-            </button>
-          </div>
-          <div className="pf-slider-thumbs">
-            {works.map((w, i) => (
-              <button
-                key={i}
-                className={`pf-slider-thumb ${i === current ? 'active' : ''}`}
-                onClick={() => setCurrent(i)}
-              >
-                <img src={w.img} alt={w.title} />
+        <div className="pf-view-toggle reveal">
+          <button
+            className={`pf-view-btn ${view === 'slider' ? 'active' : ''}`}
+            onClick={() => setView('slider')}
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="16" height="16">
+              <rect x="3" y="3" width="18" height="18" rx="2" />
+              <line x1="9" y1="3" x2="9" y2="21" />
+            </svg>
+            Slider
+          </button>
+          <button
+            className={`pf-view-btn ${view === 'grid' ? 'active' : ''}`}
+            onClick={() => setView('grid')}
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="16" height="16">
+              <rect x="3" y="3" width="7" height="7" />
+              <rect x="14" y="3" width="7" height="7" />
+              <rect x="3" y="14" width="7" height="7" />
+              <rect x="14" y="14" width="7" height="7" />
+            </svg>
+            Grid
+          </button>
+        </div>
+
+        {view === 'slider' ? (
+          <div className="pf-slider reveal">
+            <div className="pf-slider-main">
+              <button className="pf-slider-arrow pf-slider-prev" onClick={prev}>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" width="20" height="20"><path d="M15 18l-6-6 6-6"/></svg>
               </button>
+              <div className="pf-slider-img">
+                <img key={current} className="pf-slider-fade" src={works[current].img} alt={works[current].title} />
+              </div>
+              <button className="pf-slider-arrow pf-slider-next" onClick={next}>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" width="20" height="20"><path d="M9 18l6-6-6-6"/></svg>
+              </button>
+            </div>
+            <div className="pf-slider-thumbs">
+              {works.map((w, i) => (
+                <button
+                  key={i}
+                  className={`pf-slider-thumb ${i === current ? 'active' : ''}`}
+                  onClick={() => setCurrent(i)}
+                >
+                  <img src={w.img} alt={w.title} />
+                </button>
+              ))}
+            </div>
+          </div>
+        ) : (
+          <div className="pf-portfolio-grid-enhanced reveal">
+            {works.map((w, i) => (
+              <div className="pf-portfolio-card" key={i}>
+                <div className="pf-portfolio-img">
+                  <img src={w.img} alt={w.title} />
+                </div>
+                <div className="pf-portfolio-info">
+                  <h4>{w.title}</h4>
+                  <span>{w.cat}</span>
+                </div>
+              </div>
             ))}
           </div>
-        </div>
+        )}
       </div>
     </section>
   );
@@ -375,6 +419,133 @@ function DesignSection() {
               </button>
             ))}
           </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function TestimonialsSection() {
+  const testimonials = [
+    {
+      name: 'คุณบอล',
+      role: 'นักออกแบบ Product Design',
+      text: 'สั่งพิมพ์ Prototype ชิ้นแรก ประทับใจมาก รายละเอียดคมชัด สีสวย ราคาเป็นธรรม จะสั่งอีกเรื่อยๆ ครับ',
+      rating: 5,
+    },
+    {
+      name: 'คุณแอน',
+      role: 'เจ้าของธุรกิจ SME',
+      text: 'ใช้บริการพิมพ์ของพรีเมียมแจกลูกค้า งานออกมาดีมาก ลูกค้าชอบใจ ขอบคุณ P3D ครับ',
+      rating: 5,
+    },
+    {
+      name: 'คุณเฟิร์ส',
+      role: 'วิศวกร',
+      text: 'พิมพ์ชิ้นส่วนเครื่องจักร ใช้ ABS ทนทานมาก ขนาดตรงพอดี ไม่ต้องแก้ไขเพิ่มเลย',
+      rating: 5,
+    },
+    {
+      name: 'คุณมิ้นท์',
+      role: 'นิสิตคณะสถาปัตย์',
+      text: 'ส่งโมเดลอาคารมาพิมพ์ตอนตี 2 ตอนเช้าได้ของแล้ว รวดเร็วมาก คุณภาพเกินราคาจริงๆ',
+      rating: 5,
+    },
+  ];
+
+  return (
+    <section className="pf-section pf-testimonials">
+      <div className="pf-container">
+        <div className="pf-section-badge reveal">รีวิวจากลูกค้า</div>
+        <h2 className="pf-section-title reveal">
+          ลูกค้า<span className="text-gradient">พูดถึงเรา</span>
+        </h2>
+        <p className="pf-section-desc reveal">
+          ความไว้วางใจจากลูกค้ากว่า 50+ ราย คือสิ่งที่เราภูมิใจที่สุด
+        </p>
+
+        <div className="pf-testimonials-grid">
+          {testimonials.map((t, i) => (
+            <div className="pf-testimonial-card reveal" key={i}>
+              <div className="pf-testimonial-stars">
+                {Array.from({ length: t.rating }, (_, j) => (
+                  <svg key={j} viewBox="0 0 20 20" fill="currentColor" width="16" height="16" style={{ color: '#ffb703' }}>
+                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                  </svg>
+                ))}
+              </div>
+              <p className="pf-testimonial-text">"{t.text}"</p>
+              <div className="pf-testimonial-author">
+                <div className="pf-testimonial-avatar">{t.name[3]}</div>
+                <div>
+                  <div className="pf-testimonial-name">{t.name}</div>
+                  <div className="pf-testimonial-role">{t.role}</div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function FAQSection() {
+  const [openIdx, setOpenIdx] = useState(null);
+  const faqs = [
+    {
+      q: 'รองรับไฟล์อะไรบ้าง?',
+      a: 'รองรับไฟล์ STL, OBJ, STEP, 3MF สามารถอัปโหลดผ่านเว็บไซต์ได้ทันที ระบบจะอ่านโมเดลอัตโนมัติและแสดงขนาดให้ตรวจสอบก่อนสั่งพิมพ์',
+    },
+    {
+      q: 'ใช้เวลานานแค่ไหนกว่าจะได้ของ?',
+      a: 'งานทั่วไป 1-3 วัน งานเร่งด่วน 24 ชั่วโมง (มีค่าใช้จ่ายเพิ่ม) ขึ้นอยู่กับขนาดและจำนวนงาน หลังสั่งพิมพ์จะมีข้อความยืนยันให้ทราบ',
+    },
+    {
+      q: 'วัสดุแต่ละชนิดต่างกันอย่างไร?',
+      a: 'PLA เหมาะกับงานทั่วไปและรายละเอียดสูง, PETG ทนทานและยืดหยุ่น, ABS ทนความร้อนและแรงกระแทก, TPU ยืดหยุ่นเหมือนยาง, ASA ทนแสง UV สำหรับงานกลางแจ้ง',
+    },
+    {
+      q: 'มีบริการจัดส่งมั้ย?',
+      a: 'มีบริการจัดส่งทั่วประเทศผ่าน Kerry Express และ J&T Express กรุงเทพฯ ได้ของใน 1-2 วัน ต่างจังหวัด 2-5 วัน',
+    },
+    {
+      q: 'ราคานำหนักคิดอย่างไร?',
+      a: 'ราคาคำนวณจากน้ำหนักวัสดุจริงหลังพิมพ์ (ไม่ใช่ขนาดโมเดล) บวกค่าแรงและค่าบริการ สามารถดูราคาได้ทันทีหลังอัปโหลดไฟล์',
+    },
+    {
+      q: 'สั่งพิมพ์จำนวนมากมีส่วนลดมั้ย?',
+      a: 'มีส่วนลดพิเศษสำหรับงาน 10+ ชิ้นขึ้นไป ติดต่อเราเพื่อขอใบเสนอราคา bulk ได้เลยครับ',
+    },
+  ];
+
+  return (
+    <section className="pf-section pf-faq">
+      <div className="pf-container">
+        <div className="pf-section-badge reveal">คำถามที่พบบ่อย</div>
+        <h2 className="pf-section-title reveal">
+          มีคำถาม?<span className="text-gradient">เรามีคำตอบ</span>
+        </h2>
+
+        <div className="pf-faq-list">
+          {faqs.map((f, i) => (
+            <div
+              className={`pf-faq-item reveal ${openIdx === i ? 'open' : ''}`}
+              key={i}
+            >
+              <button className="pf-faq-q" onClick={() => setOpenIdx(openIdx === i ? null : i)}>
+                <span>{f.q}</span>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" width="18" height="18" className="pf-faq-chevron">
+                  <path d="M6 9l6 6 6-6" />
+                </svg>
+              </button>
+              {openIdx === i && (
+                <div className="pf-faq-a">
+                  <p>{f.a}</p>
+                </div>
+              )}
+            </div>
+          ))}
         </div>
       </div>
     </section>
@@ -735,6 +906,8 @@ export default function UploadScreen() {
       <MaterialsSection />
       <PortfolioSection />
       <DesignSection />
+      <TestimonialsSection />
+      <FAQSection />
       <ContactSection />
       <UploadCTASection />
       <Footer />

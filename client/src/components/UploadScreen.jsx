@@ -271,13 +271,13 @@ function PortfolioSection() {
     { title: 'Art Model', cat: 'PLA · White', img: '/495527744_122132591672794608_8859015468412944026_n.jpg' },
   ];
 
-  const prev = () => setCurrent(c => (c === 0 ? works.length - 1 : c - 1));
-  const next = () => setCurrent(c => (c === works.length - 1 ? 0 : c + 1));
+  const prev = useCallback(() => setCurrent(c => (c === 0 ? works.length - 1 : c - 1)), []);
+  const next = useCallback(() => setCurrent(c => (c === works.length - 1 ? 0 : c + 1)), []);
 
   useEffect(() => {
     const timer = setInterval(next, 4000);
     return () => clearInterval(timer);
-  }, [current]);
+  }, [next]);
 
   return (
     <section className="pf-section pf-portfolio" id="portfolio">
@@ -333,13 +333,13 @@ function DesignSection() {
     { title: 'Design 12', img: '/721463782_122205909518794608_5667375791186236805_n.jpg' },
   ];
 
-  const prev = () => setCurrent(c => (c === 0 ? designs.length - 1 : c - 1));
-  const next = () => setCurrent(c => (c === designs.length - 1 ? 0 : c + 1));
+  const prev = useCallback(() => setCurrent(c => (c === 0 ? designs.length - 1 : c - 1)), []);
+  const next = useCallback(() => setCurrent(c => (c === designs.length - 1 ? 0 : c + 1)), []);
 
   useEffect(() => {
     const timer = setInterval(next, 4000);
     return () => clearInterval(timer);
-  }, [current]);
+  }, [next]);
 
   return (
     <section className="pf-section pf-design" id="design">

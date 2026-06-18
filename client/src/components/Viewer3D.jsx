@@ -18,52 +18,60 @@ function createBuildPlate(isDark) {
   base.receiveShadow = true;
   group.add(base);
 
-  const minorMat = new THREE.LineBasicMaterial({ color: isDark ? 0x444444 : 0xcccccc, transparent: true, opacity: 0.4 });
+  const lineGeometry = new THREE.BufferGeometry();
+  const positions = [];
+
+  const minorColor = isDark ? 0x444444 : 0xcccccc;
   for (let i = -HALF; i <= HALF; i += 10) {
     if (i % 50 === 0) continue;
-    group.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([
-      new THREE.Vector3(-HALF, 0.01, i), new THREE.Vector3(HALF, 0.01, i),
-    ]), minorMat));
-    group.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([
-      new THREE.Vector3(i, 0.01, -HALF), new THREE.Vector3(i, 0.01, HALF),
-    ]), minorMat));
+    positions.push(-HALF, 0.01, i, HALF, 0.01, i);
+    positions.push(i, 0.01, -HALF, i, 0.01, HALF);
   }
+  lineGeometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+  const minorLine = new THREE.LineSegments(lineGeometry, new THREE.LineBasicMaterial({ color: minorColor, transparent: true, opacity: 0.4 }));
+  group.add(minorLine);
 
-  const majorMat = new THREE.LineBasicMaterial({ color: isDark ? 0x666666 : 0x999999, transparent: true, opacity: 0.6 });
+  const majorPositions = [];
   for (let i = -HALF; i <= HALF; i += 50) {
-    group.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([
-      new THREE.Vector3(-HALF, 0.01, i), new THREE.Vector3(HALF, 0.01, i),
-    ]), majorMat));
-    group.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([
-      new THREE.Vector3(i, 0.01, -HALF), new THREE.Vector3(i, 0.01, HALF),
-    ]), majorMat));
+    majorPositions.push(-HALF, 0.01, i, HALF, 0.01, i);
+    majorPositions.push(i, 0.01, -HALF, i, 0.01, HALF);
   }
+  const majorGeometry = new THREE.BufferGeometry();
+  majorGeometry.setAttribute('position', new THREE.Float32BufferAttribute(majorPositions, 3));
+  const majorLine = new THREE.LineSegments(majorGeometry, new THREE.LineBasicMaterial({ color: isDark ? 0x666666 : 0x999999, transparent: true, opacity: 0.6 }));
+  group.add(majorLine);
 
-  const centerMat = new THREE.LineBasicMaterial({ color: isDark ? 0xf0ebe0 : 0x2C2C2C, transparent: true, opacity: 0.5 });
-  group.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([
-    new THREE.Vector3(-HALF, 0.02, 0), new THREE.Vector3(HALF, 0.02, 0),
-  ]), centerMat));
-  group.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([
-    new THREE.Vector3(0, 0.02, -HALF), new THREE.Vector3(0, 0.02, HALF),
-  ]), centerMat));
+  const centerPositions = [
+    -HALF, 0.02, 0, HALF, 0.02, 0,
+    0, 0.02, -HALF, 0, 0.02, HALF,
+  ];
+  const centerGeometry = new THREE.BufferGeometry();
+  centerGeometry.setAttribute('position', new THREE.Float32BufferAttribute(centerPositions, 3));
+  const centerLine = new THREE.LineSegments(centerGeometry, new THREE.LineBasicMaterial({ color: isDark ? 0xf0ebe0 : 0x2C2C2C, transparent: true, opacity: 0.5 }));
+  group.add(centerLine);
 
-  const borderMat = new THREE.LineBasicMaterial({ color: isDark ? 0xf0ebe0 : 0x2C2C2C });
-  group.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([
-    new THREE.Vector3(-HALF, 0.03, -HALF),
-    new THREE.Vector3(HALF, 0.03, -HALF),
-    new THREE.Vector3(HALF, 0.03, HALF),
-    new THREE.Vector3(-HALF, 0.03, HALF),
-    new THREE.Vector3(-HALF, 0.03, -HALF),
-  ]), borderMat));
+  const borderPositions = [
+    -HALF, 0.03, -HALF, HALF, 0.03, -HALF,
+    HALF, 0.03, -HALF, HALF, 0.03, HALF,
+    HALF, 0.03, HALF, -HALF, 0.03, HALF,
+    -HALF, 0.03, HALF, -HALF, 0.03, -HALF,
+  ];
+  const borderGeometry = new THREE.BufferGeometry();
+  borderGeometry.setAttribute('position', new THREE.Float32BufferAttribute(borderPositions, 3));
+  const borderLine = new THREE.LineSegments(borderGeometry, new THREE.LineBasicMaterial({ color: isDark ? 0xf0ebe0 : 0x2C2C2C }));
+  group.add(borderLine);
 
-  const cornerMat = new THREE.LineBasicMaterial({ color: isDark ? 0x888888 : 0x555555 });
+  const cornerPositions = [];
   const cs = 15;
-  [[-HALF, -HALF, 1, 1], [HALF, -HALF, -1, 1], [HALF, HALF, -1, -1], [-HALF, HALF, 1, -1]].forEach(([cx, cz, sx, sz]) => {
-    group.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([
-      new THREE.Vector3(cx, 0.04, cz), new THREE.Vector3(cx + cs * sx, 0.04, cz),
-      new THREE.Vector3(cx, 0.04, cz), new THREE.Vector3(cx, 0.04, cz + cs * sz),
-    ]), cornerMat));
-  });
+  const corners = [[-HALF, -HALF, 1, 1], [HALF, -HALF, -1, 1], [HALF, HALF, -1, -1], [-HALF, HALF, 1, -1]];
+  for (const [cx, cz, sx, sz] of corners) {
+    cornerPositions.push(cx, 0.04, cz, cx + cs * sx, 0.04, cz);
+    cornerPositions.push(cx, 0.04, cz, cx, 0.04, cz + cs * sz);
+  }
+  const cornerGeometry = new THREE.BufferGeometry();
+  cornerGeometry.setAttribute('position', new THREE.Float32BufferAttribute(cornerPositions, 3));
+  const cornerLine = new THREE.LineSegments(cornerGeometry, new THREE.LineBasicMaterial({ color: isDark ? 0x888888 : 0x555555 }));
+  group.add(cornerLine);
 
   return group;
 }
